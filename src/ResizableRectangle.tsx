@@ -1,8 +1,13 @@
 import React, { useState, useRef, useEffect, MouseEvent } from "react";
 
-const ResizableRectangle: React.FC = () => {
+type ResizableRectangleProps = {
+  initialPosition: { top: number; left: number };
+};
+const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
+  initialPosition,
+}) => {
   const [dimensions, setDimensions] = useState({ width: 200, height: 150 });
-  const [position, setPosition] = useState({ top: 100, left: 100 });
+  const [position, setPosition] = useState(initialPosition);
   const [isResizing, setIsResizing] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
