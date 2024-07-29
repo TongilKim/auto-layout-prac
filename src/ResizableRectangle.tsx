@@ -6,6 +6,20 @@ const ResizableRectangle: React.FC = () => {
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
   const rectangleRef = useRef<HTMLDivElement | null>(null);
 
+  const resizeRectangleWidth = (currentX: number) => {
+    // "deltaX" and "deltaY" are the distances of the difference between current mouse position and the last mouse position.
+    // So basically, calculating deltaX and deltaY will give us the distance how much we want to resize the rectangle.
+    const deltaX = currentX - lastMousePosition.x;
+
+    return dimensions.width + deltaX;
+  };
+
+  const resizeRectangleHeight = (currentY: number) => {
+    const deltaY = currentY - lastMousePosition.y;
+
+    return dimensions.height + deltaY;
+  };
+
   const handleMouseDown = (event: MouseEvent<HTMLDivElement>) => {
     console.log("MOUSE DOWN");
     setIsResizing(true);
@@ -23,16 +37,11 @@ const ResizableRectangle: React.FC = () => {
     const currentX = event.clientX;
     const currentY = event.clientY;
 
-    // "deltaX" and "deltaY" are the distances of the difference between current mouse position and the last mouse position.
-    // So basically, calculating deltaX and deltaY will give us the distance how much we want to resize the rectangle.
-    const deltaX = currentX - lastMousePosition.x;
-    const deltaY = currentY - lastMousePosition.y;
-
     // Adds deltaX and deltaY to the previous width and height of the rectangle to resize it.
-    setDimensions((prevDimensions) => ({
-      width: prevDimensions.width + deltaX,
-      height: prevDimensions.height + deltaY,
-    }));
+    setDimensions({
+      width: resizeRectangleWidth(currentX),
+      height: resizeRectangleHeight(currentY),
+    });
 
     setLastMousePosition({ x: event.clientX, y: event.clientY });
   };
@@ -74,7 +83,7 @@ const ResizableRectangle: React.FC = () => {
           backgroundColor: "blue",
           cursor: "nwse-resize",
         }}
-        onMouseDown={handleMouseDown}
+        onPointerDown={handleMouseDown}
       ></div>
     </div>
   );
