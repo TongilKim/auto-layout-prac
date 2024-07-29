@@ -2,11 +2,13 @@ import React, { useState, useRef, useEffect, MouseEvent } from "react";
 
 const ResizableRectangle: React.FC = () => {
   const [dimensions, setDimensions] = useState({ width: 200, height: 150 });
+  const [position, setPosition] = useState({ top: 100, left: 100 });
   const [isResizing, setIsResizing] = useState(false);
+  const [isMoving, setIsMoving] = useState(false);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
   const rectangleRef = useRef<HTMLDivElement | null>(null);
 
-  const resizeRectangleWidth = (currentX: number) => {
+  const _getResizedRectangleWidth = (currentX: number) => {
     // "deltaX" and "deltaY" are the distances of the difference between current mouse position and the last mouse position.
     // So basically, calculating deltaX and deltaY will give us the distance how much we want to resize the rectangle.
     const deltaX = currentX - lastMousePosition.x;
@@ -14,36 +16,49 @@ const ResizableRectangle: React.FC = () => {
     return dimensions.width + deltaX;
   };
 
-  const resizeRectangleHeight = (currentY: number) => {
+  const _getResizedRectangleHeight = (currentY: number) => {
     const deltaY = currentY - lastMousePosition.y;
 
     return dimensions.height + deltaY;
   };
 
-  const handleMouseDown = (event: MouseEvent<HTMLDivElement>) => {
-    console.log("MOUSE DOWN");
-    setIsResizing(true);
+  const handleMouseDown = (
+    event: MouseEvent<HTMLDivElement>,
+    isResizing: boolean
+  ) => {
     setLastMousePosition({ x: event.clientX, y: event.clientY });
+
+    if (isResizing) {
+      setIsResizing(true);
+    } else {
+      setIsMoving(true);
+    }
   };
 
   const handleMouseUp = () => {
     setIsResizing(false);
+    setIsMoving(false);
   };
 
   // This event listener is fired when the mouse cursor is being moved in the rectangle area ONLY.
   const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
-    if (!isResizing) return;
-
     const currentX = event.clientX;
     const currentY = event.clientY;
 
-    // Adds deltaX and deltaY to the previous width and height of the rectangle to resize it.
-    setDimensions({
-      width: resizeRectangleWidth(currentX),
-      height: resizeRectangleHeight(currentY),
-    });
+    if (isResizing) {
+      // Adds deltaX and deltaY to the previous width and height of the rectangle to resize it.
+      setDimensions({
+        width: _getResizedRectangleWidth(currentX),
+        height: _getResizedRectangleHeight(currentY),
+      });
+    } else if (isMoving) {
+      setPosition({
+        top: position.top + _getResizedRectangleHeight(currentY),
+        left: position.left + _getResizedRectangleWidth(currentX),
+      });
+    }
 
-    setLastMousePosition({ x: event.clientX, y: event.clientY });
+    setLastMousePosition({ x: currentX, y: currentY });
   };
 
   useEffect(() => {
@@ -51,6 +66,7 @@ const ResizableRectangle: React.FC = () => {
     const handleWindowMouseUp = () => {
       console.log("WINDOW MOUSE UP");
       setIsResizing(false);
+      setIsMoving(false);
     };
 
     window.addEventListener("mouseup", handleWindowMouseUp);
@@ -63,6 +79,8 @@ const ResizableRectangle: React.FC = () => {
     <div
       style={{
         position: "relative",
+        top: position.top,
+        left: position.left,
         width: dimensions.width,
         height: dimensions.height,
         backgroundColor: "lightblue",
@@ -72,6 +90,7 @@ const ResizableRectangle: React.FC = () => {
       ref={rectangleRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseUp}
+      onMouseDown={(e) => handleMouseDown(e, false)}
     >
       <div
         style={{
@@ -83,7 +102,7 @@ const ResizableRectangle: React.FC = () => {
           backgroundColor: "blue",
           cursor: "nwse-resize",
         }}
-        onPointerDown={handleMouseDown}
+        onMouseDown={(e) => handleMouseDown(e, true)}
       ></div>
     </div>
   );
