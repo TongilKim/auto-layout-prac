@@ -26,6 +26,7 @@ const ResizableRectangle: React.FC = () => {
     event: MouseEvent<HTMLDivElement>,
     isResizing: boolean
   ) => {
+    console.log("hi");
     setLastMousePosition({ x: event.clientX, y: event.clientY });
 
     if (isResizing) {
@@ -52,9 +53,12 @@ const ResizableRectangle: React.FC = () => {
         height: _getResizedRectangleHeight(currentY),
       });
     } else if (isMoving) {
+      const deltaX = currentX - lastMousePosition.x;
+      const deltaY = currentY - lastMousePosition.y;
+
       setPosition({
-        top: position.top + _getResizedRectangleHeight(currentY),
-        left: position.left + _getResizedRectangleWidth(currentX),
+        top: position.top + deltaY,
+        left: position.left + deltaX,
       });
     }
 
