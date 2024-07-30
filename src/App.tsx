@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import ResizableRectangle from "./ResizableRectangle";
 
+// This function will generate a random position for the rectangle.
 const _getRandomPosition = (
   existingPositions: { top: number; left: number }[]
 ) => {
@@ -25,7 +26,9 @@ const _getRandomPosition = (
 function App() {
   const [positions] = useState(() => {
     const pos1 = _getRandomPosition([]);
+    // pos1 is passed to the second rectangle to avoid overlapping.
     const pos2 = _getRandomPosition([pos1]);
+    // pos1 and pos2 are passed to the third rectangle to avoid overlapping.
     const pos3 = _getRandomPosition([pos1, pos2]);
     return [pos1, pos2, pos3];
   });
