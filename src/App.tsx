@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import ResizableRectangle from "./ResizableRectangle";
+import { useDefaultStore } from "./store/useDefaultStore";
 
 // This function will generate a random position for the rectangle.
 const _getRandomPosition = (
@@ -24,6 +25,8 @@ const _getRandomPosition = (
 };
 
 function App() {
+  const parentElement = useDefaultStore((state) => state.parentElement);
+
   const [positions] = useState(() => {
     const pos1 = _getRandomPosition([]);
     // pos1 is passed to the second rectangle to avoid overlapping.
@@ -39,7 +42,13 @@ function App() {
 
   return (
     <>
-      <div style={{ width: 1200, height: 800, background: "white" }}>
+      <div
+        style={{
+          width: parentElement.width,
+          height: parentElement.height,
+          background: "white",
+        }}
+      >
         {positions.map((pos, index) => (
           <ResizableRectangle key={index} initialPosition={pos} />
         ))}
