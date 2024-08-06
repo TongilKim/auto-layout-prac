@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, MouseEvent } from "react";
+import { useDefaultStore } from "./store/useDefaultStore";
 
 type ResizableRectangleProps = {
   initialPosition: { top: number; left: number };
@@ -6,6 +7,16 @@ type ResizableRectangleProps = {
 const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
   initialPosition,
 }) => {
+  const parentElement = useDefaultStore((state) => state.parentElement);
+  const lowestRightMargin = useDefaultStore((state) => state.lowestRightMargin);
+  const lowestLeftMargin = useDefaultStore((state) => state.lowestLeftMargin);
+  const setLowestRightMargin = useDefaultStore(
+    (state) => state.setLowestRightMargin
+  );
+  const setLowestLeftMargin = useDefaultStore(
+    (state) => state.setLowestLeftMargin
+  );
+
   const [dimensions, setDimensions] = useState({ width: 200, height: 150 });
   const [position, setPosition] = useState(initialPosition);
   const [isResizing, setIsResizing] = useState(false);
@@ -27,12 +38,29 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
     return dimensions.height + deltaY;
   };
 
+  const _setLowestMargin = () => {
+    // Right margin = Parent width - (Rectangle left position + Rectangle width)
+    const rightMargin =
+      parentElement.width - (position.left + dimensions.width);
+    // Left margin = Rectangle left position
+    const leftMargin = position.left;
+
+    if (rightMargin > lowestRightMargin) {
+      setLowestRightMargin(rightMargin);
+    }
+
+    if (leftMargin > lowestLeftMargin) {
+      setLowestLeftMargin(leftMargin);
+    }
+  };
+
   const handleMouseDown = (
     event: MouseEvent<HTMLDivElement>,
     isResizing: boolean
   ) => {
     console.log("hi");
     setLastMousePosition({ x: event.clientX, y: event.clientY });
+    _setLowestMargin();
 
     if (isResizing) {
       setIsResizing(true);
@@ -67,6 +95,7 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
       });
     }
 
+    _setLowestMargin();
     setLastMousePosition({ x: currentX, y: currentY });
   };
 
@@ -101,6 +130,7 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
       onMouseLeave={handleMouseUp}
       onMouseDown={(e) => handleMouseDown(e, false)}
     >
+      {/* Resizing button */}
       <div
         style={{
           position: "absolute",
@@ -112,7 +142,7 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
           cursor: "nwse-resize",
         }}
         onMouseDown={(e) => handleMouseDown(e, true)}
-      ></div>
+      />
     </div>
   );
 };

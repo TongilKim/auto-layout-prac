@@ -26,7 +26,11 @@ const _getRandomPosition = (
 
 function App() {
   const parentElement = useDefaultStore((state) => state.parentElement);
-
+  const setParentElement = useDefaultStore((state) => state.setParentElement);
+  const lowestRightMargin = useDefaultStore((state) => state.lowestRightMargin);
+  const lowestLeftMargin = useDefaultStore((state) => state.lowestLeftMargin);
+  console.log("Right Margin:", lowestRightMargin);
+  console.log("Left Margin:", lowestLeftMargin);
   const [positions] = useState(() => {
     const pos1 = _getRandomPosition([]);
     // pos1 is passed to the second rectangle to avoid overlapping.
@@ -37,7 +41,7 @@ function App() {
   });
 
   const onClickExecuteAutoLayout = () => {
-    console.log("Execute Auto Layout");
+    setParentElement(1200, 800);
   };
 
   return (
