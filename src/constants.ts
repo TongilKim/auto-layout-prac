@@ -1,0 +1,2 @@
+export const DEFAULT_PARENT_WIDTH = 1200;
+export const DEFAULT_PARENT_HEIGHT = 800;

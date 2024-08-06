@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import ResizableRectangle from "./ResizableRectangle";
 import { useDefaultStore } from "./store/useDefaultStore";
+import { DEFAULT_PARENT_HEIGHT, DEFAULT_PARENT_WIDTH } from "./constants";
 
 // This function will generate a random position for the rectangle.
 const _getRandomPosition = (
@@ -27,19 +28,8 @@ const _getRandomPosition = (
 function App() {
   const parentElement = useDefaultStore((state) => state.parentElement);
   const childElements = useDefaultStore((state) => state.childElements);
-  const savedLowestRightMargin = useDefaultStore(
-    (state) => state.lowestRightMargin
-  );
-  const savedLowestLeftMargin = useDefaultStore(
-    (state) => state.lowestLeftMargin
-  );
+
   const setParentElement = useDefaultStore((state) => state.setParentElement);
-  const setLowestRightMargin = useDefaultStore(
-    (state) => state.setLowestRightMargin
-  );
-  const setLowestLeftMargin = useDefaultStore(
-    (state) => state.setLowestLeftMargin
-  );
 
   const [positions] = useState(() => {
     const pos1 = _getRandomPosition([]);
@@ -50,10 +40,9 @@ function App() {
     return [pos1, pos2, pos3];
   });
 
-  const onClickExecuteAutoLayout = () => {
-    console.log({ childElements });
-    let minLeftMargin = savedLowestLeftMargin;
-    let minRightMargin = savedLowestRightMargin;
+  const _findMinMargin = () => {
+    let minRightMargin = DEFAULT_PARENT_WIDTH;
+    let minLeftMargin = DEFAULT_PARENT_HEIGHT;
 
     childElements.forEach((item) => {
       if (item.leftMargin < minLeftMargin) {
@@ -64,10 +53,15 @@ function App() {
       }
     });
     console.log({ minLeftMargin, minRightMargin });
+    return Math.min(minLeftMargin, minRightMargin);
+  };
+  const onClickExecuteAutoLayout = () => {
+    console.log({ childElements });
 
-    setLowestRightMargin(minRightMargin);
-    setLowestLeftMargin(minLeftMargin);
-    setParentElement(1200, 800);
+    const minMargin = _findMinMargin();
+
+    console.log({ minMargin });
+    setParentElement(parentElement.width - minMargin, parentElement.height);
   };
 
   return (

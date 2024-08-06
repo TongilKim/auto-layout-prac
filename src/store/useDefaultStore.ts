@@ -1,12 +1,12 @@
 import { create } from "zustand";
+import { DEFAULT_PARENT_HEIGHT, DEFAULT_PARENT_WIDTH } from "../constants";
 
 type State = {
   parentElement: {
     width: number;
     height: number;
   };
-  lowestRightMargin: number;
-  lowestLeftMargin: number;
+
   childElements:
     | Array<{
         id: number;
@@ -18,8 +18,7 @@ type State = {
 
 type Action = {
   setParentElement: (width: number, height: number) => void;
-  setLowestRightMargin: (margin: number) => void;
-  setLowestLeftMargin: (margin: number) => void;
+
   setChildElements: (
     id: number,
     leftMargin: number,
@@ -29,14 +28,12 @@ type Action = {
 
 export const useDefaultStore = create<State & Action>((set, get) => ({
   parentElement: {
-    width: 1200,
-    height: 800,
+    width: DEFAULT_PARENT_WIDTH,
+    height: DEFAULT_PARENT_HEIGHT,
   },
-  lowestRightMargin: 1200,
-  lowestLeftMargin: 800,
+
   childElements: [],
   setChildElements: (id, leftMargin, rightMargin) => {
-    console.log("current uid: ", id);
     const childElements = get().childElements;
     if (childElements.length === 0) {
       set(() => ({ childElements: [{ id, leftMargin, rightMargin }] }));
@@ -62,8 +59,7 @@ export const useDefaultStore = create<State & Action>((set, get) => ({
       });
     }
   },
-  setLowestRightMargin: (margin) => set(() => ({ lowestRightMargin: margin })),
-  setLowestLeftMargin: (margin) => set(() => ({ lowestLeftMargin: margin })),
+
   setParentElement: (width, height) =>
     set(() => ({ parentElement: { width, height } })),
 }));
