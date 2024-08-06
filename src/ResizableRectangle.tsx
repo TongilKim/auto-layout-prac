@@ -3,19 +3,14 @@ import { useDefaultStore } from "./store/useDefaultStore";
 
 type ResizableRectangleProps = {
   initialPosition: { top: number; left: number };
+  uId: number;
 };
 const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
   initialPosition,
+  uId,
 }) => {
   const parentElement = useDefaultStore((state) => state.parentElement);
-  const lowestRightMargin = useDefaultStore((state) => state.lowestRightMargin);
-  const lowestLeftMargin = useDefaultStore((state) => state.lowestLeftMargin);
-  const setLowestRightMargin = useDefaultStore(
-    (state) => state.setLowestRightMargin
-  );
-  const setLowestLeftMargin = useDefaultStore(
-    (state) => state.setLowestLeftMargin
-  );
+  const setChildElements = useDefaultStore((state) => state.setChildElements);
 
   const [dimensions, setDimensions] = useState({ width: 200, height: 150 });
   const [position, setPosition] = useState(initialPosition);
@@ -38,20 +33,14 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
     return dimensions.height + deltaY;
   };
 
-  const _setLowestMargin = () => {
-    // Right margin = Parent width - (Rectangle left position + Rectangle width)
+  const _setMarginInfo = () => {
     const rightMargin =
       parentElement.width - (position.left + dimensions.width);
     // Left margin = Rectangle left position
     const leftMargin = parentElement.width - (dimensions.width + rightMargin);
 
-    if (rightMargin < lowestRightMargin) {
-      setLowestRightMargin(rightMargin);
-    }
-
-    if (leftMargin < lowestLeftMargin) {
-      setLowestLeftMargin(leftMargin);
-    }
+    setChildElements(uId, leftMargin, rightMargin);
+    // // Right margin = Parent width - (Rectangle left position + Rectangle width)
   };
 
   const handleMouseDown = (
@@ -93,7 +82,7 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
       });
     }
 
-    _setLowestMargin();
+    _setMarginInfo();
     setLastMousePosition({ x: currentX, y: currentY });
   };
 

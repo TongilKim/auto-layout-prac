@@ -26,11 +26,21 @@ const _getRandomPosition = (
 
 function App() {
   const parentElement = useDefaultStore((state) => state.parentElement);
+  const childElements = useDefaultStore((state) => state.childElements);
+  const savedLowestRightMargin = useDefaultStore(
+    (state) => state.lowestRightMargin
+  );
+  const savedLowestLeftMargin = useDefaultStore(
+    (state) => state.lowestLeftMargin
+  );
   const setParentElement = useDefaultStore((state) => state.setParentElement);
-  const lowestRightMargin = useDefaultStore((state) => state.lowestRightMargin);
-  const lowestLeftMargin = useDefaultStore((state) => state.lowestLeftMargin);
-  console.log("Right Margin:", lowestRightMargin);
-  console.log("Left Margin:", lowestLeftMargin);
+  const setLowestRightMargin = useDefaultStore(
+    (state) => state.setLowestRightMargin
+  );
+  const setLowestLeftMargin = useDefaultStore(
+    (state) => state.setLowestLeftMargin
+  );
+
   const [positions] = useState(() => {
     const pos1 = _getRandomPosition([]);
     // pos1 is passed to the second rectangle to avoid overlapping.
@@ -41,6 +51,22 @@ function App() {
   });
 
   const onClickExecuteAutoLayout = () => {
+    console.log({ childElements });
+    let minLeftMargin = savedLowestLeftMargin;
+    let minRightMargin = savedLowestRightMargin;
+
+    childElements.forEach((item) => {
+      if (item.leftMargin < minLeftMargin) {
+        minLeftMargin = item.leftMargin;
+      }
+      if (item.rightMargin < minRightMargin) {
+        minRightMargin = item.rightMargin;
+      }
+    });
+    console.log({ minLeftMargin, minRightMargin });
+
+    setLowestRightMargin(minRightMargin);
+    setLowestLeftMargin(minLeftMargin);
     setParentElement(1200, 800);
   };
 
@@ -54,7 +80,7 @@ function App() {
         }}
       >
         {positions.map((pos, index) => (
-          <ResizableRectangle key={index} initialPosition={pos} />
+          <ResizableRectangle key={index} initialPosition={pos} uId={index} />
         ))}
       </div>
       <div className="card">
