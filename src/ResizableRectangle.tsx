@@ -43,13 +43,13 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
     const rightMargin =
       parentElement.width - (position.left + dimensions.width);
     // Left margin = Rectangle left position
-    const leftMargin = position.left;
+    const leftMargin = parentElement.width - (dimensions.width + rightMargin);
 
-    if (rightMargin > lowestRightMargin) {
+    if (rightMargin < lowestRightMargin) {
       setLowestRightMargin(rightMargin);
     }
 
-    if (leftMargin > lowestLeftMargin) {
+    if (leftMargin < lowestLeftMargin) {
       setLowestLeftMargin(leftMargin);
     }
   };
@@ -58,9 +58,7 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
     event: MouseEvent<HTMLDivElement>,
     isResizing: boolean
   ) => {
-    console.log("hi");
     setLastMousePosition({ x: event.clientX, y: event.clientY });
-    _setLowestMargin();
 
     if (isResizing) {
       setIsResizing(true);
@@ -100,9 +98,8 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
   };
 
   useEffect(() => {
-    // This event listener is fired when the mouse button is clicked & released anywhere on the window
+    // This event listener is fired when the mouse button has released anywhere on the window
     const handleWindowMouseUp = () => {
-      console.log("WINDOW MOUSE UP");
       setIsResizing(false);
       setIsMoving(false);
     };

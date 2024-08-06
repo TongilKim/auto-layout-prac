@@ -20,8 +20,8 @@ export const useDefaultStore = create<State & Action>((set) => ({
     width: 1200,
     height: 800,
   },
-  lowestRightMargin: 0,
-  lowestLeftMargin: 0,
+  lowestRightMargin: 1200,
+  lowestLeftMargin: 800,
   setLowestRightMargin: (margin) => set(() => ({ lowestRightMargin: margin })),
   setLowestLeftMargin: (margin) => set(() => ({ lowestLeftMargin: margin })),
   setParentElement: (width, height) =>
