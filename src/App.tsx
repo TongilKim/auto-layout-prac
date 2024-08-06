@@ -26,7 +26,9 @@ const _getRandomPosition = (
 };
 
 function App() {
-  const parentElement = useDefaultStore((state) => state.parentElement);
+  const parentElementDimension = useDefaultStore(
+    (state) => state.parentElementDimension
+  );
   const childElements = useDefaultStore((state) => state.childElements);
 
   const setParentElement = useDefaultStore((state) => state.setParentElement);
@@ -58,18 +60,22 @@ function App() {
   const onClickExecuteAutoLayout = () => {
     console.log({ childElements });
 
-    const minMargin = _findMinMargin();
+    // this will give us the minimum margin for both sides (left and right).
+    const marginForBothSide = _findMinMargin();
 
-    console.log({ minMargin });
-    setParentElement(parentElement.width - minMargin, parentElement.height);
+    console.log({ marginForBothSide });
+    setParentElement(
+      parentElementDimension.width - marginForBothSide,
+      parentElementDimension.height
+    );
   };
 
   return (
     <>
       <div
         style={{
-          width: parentElement.width,
-          height: parentElement.height,
+          width: parentElementDimension.width,
+          height: parentElementDimension.height,
           background: "white",
         }}
       >

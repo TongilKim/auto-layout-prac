@@ -9,7 +9,9 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
   initialPosition,
   uId,
 }) => {
-  const parentElement = useDefaultStore((state) => state.parentElement);
+  const parentElementDimension = useDefaultStore(
+    (state) => state.parentElementDimension
+  );
   const setChildElements = useDefaultStore((state) => state.setChildElements);
 
   const [dimensions, setDimensions] = useState({ width: 200, height: 150 });
@@ -35,9 +37,10 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
 
   const _setMarginInfo = () => {
     const rightMargin =
-      parentElement.width - (position.left + dimensions.width);
+      parentElementDimension.width - (position.left + dimensions.width);
     // Left margin = Rectangle left position
-    const leftMargin = parentElement.width - (dimensions.width + rightMargin);
+    const leftMargin =
+      parentElementDimension.width - (dimensions.width + rightMargin);
 
     setChildElements(uId, leftMargin, rightMargin);
     // // Right margin = Parent width - (Rectangle left position + Rectangle width)

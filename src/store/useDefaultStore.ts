@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { DEFAULT_PARENT_HEIGHT, DEFAULT_PARENT_WIDTH } from "../constants";
 
 type State = {
-  parentElement: {
+  parentElementDimension: {
     width: number;
     height: number;
   };
@@ -27,7 +27,7 @@ type Action = {
 };
 
 export const useDefaultStore = create<State & Action>((set, get) => ({
-  parentElement: {
+  parentElementDimension: {
     width: DEFAULT_PARENT_WIDTH,
     height: DEFAULT_PARENT_HEIGHT,
   },
@@ -61,5 +61,5 @@ export const useDefaultStore = create<State & Action>((set, get) => ({
   },
 
   setParentElement: (width, height) =>
-    set(() => ({ parentElement: { width, height } })),
+    set(() => ({ parentElementDimension: { width, height } })),
 }));
