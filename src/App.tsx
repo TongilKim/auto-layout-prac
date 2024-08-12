@@ -14,8 +14,8 @@ const _getRandomPosition = (
   };
   do {
     position = {
-      top: Math.floor(Math.random() * 700), // Adjust based on container height
-      left: Math.floor(Math.random() * 1000), // Adjust based on container width
+      top: Math.floor(Math.random() * 400), // Adjust based on container height
+      left: Math.floor(Math.random() * 700), // Adjust based on container width
     };
   } while (
     existingPositions.some(
@@ -26,9 +26,7 @@ const _getRandomPosition = (
 };
 
 function App() {
-  const parentElementDimension = useDefaultStore(
-    (state) => state.parentElementDimension
-  );
+  const parentElement = useDefaultStore((state) => state.parentElement);
   const childElements = useDefaultStore((state) => state.childElements);
 
   const setParentElement = useDefaultStore((state) => state.setParentElement);
@@ -57,6 +55,7 @@ function App() {
     console.log({ minLeftMargin, minRightMargin });
     return Math.min(minLeftMargin, minRightMargin);
   };
+
   const onClickExecuteAutoLayout = () => {
     console.log({ childElements });
 
@@ -65,8 +64,8 @@ function App() {
 
     console.log({ marginForBothSide });
     setParentElement(
-      parentElementDimension.width - marginForBothSide,
-      parentElementDimension.height
+      parentElement.width - marginForBothSide,
+      parentElement.height
     );
   };
 
@@ -74,8 +73,8 @@ function App() {
     <>
       <div
         style={{
-          width: parentElementDimension.width,
-          height: parentElementDimension.height,
+          width: parentElement.width,
+          height: parentElement.height,
           background: "white",
         }}
       >
