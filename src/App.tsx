@@ -26,8 +26,6 @@ const _getRandomPosition = (
 };
 
 function App() {
-  const [isReducedFromRight, setIsReducedFromRight] = useState(false);
-
   const parentElement = useDefaultStore((state) => state.parentElement);
   const childElements: ChildElement[] = useDefaultStore(
     (state) => state.childElements
@@ -72,6 +70,23 @@ function App() {
     return { closetLeftElement, closetRightElement };
   };
 
+  // This function will return the minimum padding from the left and right side.
+  const _getMinimumPadding = (leftPadding: number, rightPadding: number) => {
+    return Math.min(leftPadding, rightPadding);
+  };
+
+  const _getMinimumWidth = (
+    leftMarginOfClosetRightElement: number,
+    widthOfClosetRightElement: number,
+    leftMarginOfClosestLeftElement: number
+  ) => {
+    return (
+      leftMarginOfClosetRightElement +
+      widthOfClosetRightElement -
+      leftMarginOfClosestLeftElement
+    );
+  };
+
   const onClickExecuteAutoLayout = () => {
     console.log({ childElements });
 
@@ -79,25 +94,21 @@ function App() {
     if (closetElements.closetLeftElement && closetElements.closetRightElement) {
       const { closetLeftElement, closetRightElement } = closetElements;
 
-      const paddingForBothSide = Math.min(
+      const paddingForBothSide = _getMinimumPadding(
         closetLeftElement.leftMargin,
         closetRightElement.rightMargin
       );
 
-      const isWidthReducedFromRight =
-        closetRightElement.rightMargin === paddingForBothSide;
+      const minimumWidth = _getMinimumWidth(
+        closetRightElement.leftMargin,
+        closetRightElement.width,
+        closetLeftElement.leftMargin
+      );
 
-      setIsReducedFromRight(isWidthReducedFromRight);
-
-      const minimumWidth =
-        closetRightElement.leftMargin +
-        closetRightElement.width -
-        closetLeftElement.leftMargin;
       // const finalWidth = minimumWidth + paddingForBothSide * 2;
 
       console.log({ paddingForBothSide });
       console.log({ closetElements });
-      // this will give us the minimum margin for both sides (left and right).
 
       setParentElementDimension(minimumWidth, DEFAULT_PARENT_HEIGHT);
       setTimeout(() => {
