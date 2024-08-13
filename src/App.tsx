@@ -25,6 +25,24 @@ const _getRandomPosition = (
   return position;
 };
 
+// This function will return the minimum padding from the left and right side.
+const _getMinimumPadding = (leftPadding: number, rightPadding: number) => {
+  return Math.min(leftPadding, rightPadding);
+};
+
+// This function will return the minimum width for the parent element.
+const _getMinimumWidthForParentElement = (
+  leftMarginOfClosetRightElement: number,
+  widthOfClosetRightElement: number,
+  leftMarginOfClosestLeftElement: number
+) => {
+  return (
+    leftMarginOfClosetRightElement +
+    widthOfClosetRightElement -
+    leftMarginOfClosestLeftElement
+  );
+};
+
 function App() {
   const parentElement = useDefaultStore((state) => state.parentElement);
   const childElements: ChildElement[] = useDefaultStore(
@@ -48,7 +66,7 @@ function App() {
   });
 
   // This function will returns the closest element from the left and right side.
-  const _findClosestElements = () => {
+  const findClosestElements = () => {
     let minRightMargin = DEFAULT_PARENT_WIDTH;
     let minLeftMargin = DEFAULT_PARENT_HEIGHT;
     let closetLeftElement: ChildElement = null;
@@ -70,27 +88,10 @@ function App() {
     return { closetLeftElement, closetRightElement };
   };
 
-  // This function will return the minimum padding from the left and right side.
-  const _getMinimumPadding = (leftPadding: number, rightPadding: number) => {
-    return Math.min(leftPadding, rightPadding);
-  };
-
-  const _getMinimumWidth = (
-    leftMarginOfClosetRightElement: number,
-    widthOfClosetRightElement: number,
-    leftMarginOfClosestLeftElement: number
-  ) => {
-    return (
-      leftMarginOfClosetRightElement +
-      widthOfClosetRightElement -
-      leftMarginOfClosestLeftElement
-    );
-  };
-
   const onClickExecuteAutoLayout = () => {
     console.log({ childElements });
 
-    const closetElements = _findClosestElements();
+    const closetElements = findClosestElements();
     if (closetElements.closetLeftElement && closetElements.closetRightElement) {
       const { closetLeftElement, closetRightElement } = closetElements;
 
@@ -99,7 +100,7 @@ function App() {
         closetRightElement.rightMargin
       );
 
-      const minimumWidth = _getMinimumWidth(
+      const minimumWidth = _getMinimumWidthForParentElement(
         closetRightElement.leftMargin,
         closetRightElement.width,
         closetLeftElement.leftMargin
