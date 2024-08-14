@@ -32,14 +32,14 @@ const _getMinimumPadding = (leftPadding: number, rightPadding: number) => {
 
 // This function will return the minimum width for the parent element.
 const _getMinimumWidthForParentElement = (
-  leftMarginOfClosetRightElement: number,
+  leftPaddingOfClosetRightElement: number,
   widthOfClosetRightElement: number,
-  leftMarginOfClosestLeftElement: number
+  leftPaddingOfClosestLeftElement: number
 ) => {
   return (
-    leftMarginOfClosetRightElement +
+    leftPaddingOfClosetRightElement +
     widthOfClosetRightElement -
-    leftMarginOfClosestLeftElement
+    leftPaddingOfClosestLeftElement
   );
 };
 
@@ -67,19 +67,20 @@ function App() {
 
   // This function will returns the closest element from the left and right side.
   const findClosestElements = () => {
-    let minRightMargin = DEFAULT_PARENT_WIDTH;
-    let minLeftMargin = DEFAULT_PARENT_HEIGHT;
+    // for the width
+    let minRightPadding = DEFAULT_PARENT_WIDTH;
+    let minLeftPadding = DEFAULT_PARENT_HEIGHT;
     let closetLeftElement: ChildElement = null;
     let closetRightElement: ChildElement = null;
 
     childElements.forEach((item) => {
-      if (item.leftMargin < minLeftMargin) {
-        minLeftMargin = item.leftMargin;
+      if (item.leftPadding < minLeftPadding) {
+        minLeftPadding = item.leftPadding;
         closetLeftElement = item;
         // setLeftClosestElementId(item.id);
       }
-      if (item.rightMargin < minRightMargin) {
-        minRightMargin = item.rightMargin;
+      if (item.rightPadding < minRightPadding) {
+        minRightPadding = item.rightPadding;
         closetRightElement = item;
         // setRightClosestElementId(item.id);
       }
@@ -95,25 +96,24 @@ function App() {
     if (closetElements.closetLeftElement && closetElements.closetRightElement) {
       const { closetLeftElement, closetRightElement } = closetElements;
 
-      const paddingForBothSide = _getMinimumPadding(
-        closetLeftElement.leftMargin,
-        closetRightElement.rightMargin
+      const paddingForWidth = _getMinimumPadding(
+        closetLeftElement.leftPadding,
+        closetRightElement.rightPadding
       );
-
       const minimumWidth = _getMinimumWidthForParentElement(
-        closetRightElement.leftMargin,
+        closetRightElement.leftPadding,
         closetRightElement.width,
-        closetLeftElement.leftMargin
+        closetLeftElement.leftPadding
       );
 
-      // const finalWidth = minimumWidth + paddingForBothSide * 2;
+      // const finalWidth = minimumWidth + paddingForWidth * 2;
 
-      console.log({ paddingForBothSide });
+      console.log({ paddingForWidth });
       console.log({ closetElements });
 
       setParentElementDimension(minimumWidth, DEFAULT_PARENT_HEIGHT);
       setTimeout(() => {
-        setParentElementWidthPadding(paddingForBothSide);
+        setParentElementWidthPadding(paddingForWidth);
       }, 3000);
     }
   };

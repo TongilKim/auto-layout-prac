@@ -4,8 +4,8 @@ import { DEFAULT_PARENT_HEIGHT, DEFAULT_PARENT_WIDTH } from "../constants";
 export type ChildElement = {
   id: number;
   width: number;
-  leftMargin: number;
-  rightMargin: number;
+  leftPadding: number;
+  rightPadding: number;
 };
 
 type State = {
@@ -24,8 +24,8 @@ type Action = {
   setChildElements: (
     id: number,
     width: number,
-    leftMargin: number,
-    rightMargin: number
+    leftPadding: number,
+    rightPadding: number
   ) => void;
 };
 
@@ -41,17 +41,19 @@ export const useDefaultStore = create<State & Action>((set, get) => ({
     set(() => ({ parentElement: { ...get().parentElement, widthPadding } })),
 
   childElements: [],
-  setChildElements: (id, width, leftMargin, rightMargin) => {
+  setChildElements: (id, width, leftPadding, rightPadding) => {
     const childElements = get().childElements;
     if (childElements.length === 0) {
-      set(() => ({ childElements: [{ id, width, leftMargin, rightMargin }] }));
+      set(() => ({
+        childElements: [{ id, width, leftPadding, rightPadding }],
+      }));
     } else {
       set((state) => {
         if (childElements.some((child) => child.id === id)) {
           return {
             childElements: state.childElements.map((child) => {
               if (child.id === id) {
-                return { id, width, leftMargin, rightMargin };
+                return { id, width, leftPadding, rightPadding };
               }
               return child;
             }),
@@ -60,7 +62,7 @@ export const useDefaultStore = create<State & Action>((set, get) => ({
           return {
             childElements: [
               ...state.childElements,
-              { id, width, leftMargin, rightMargin },
+              { id, width, leftPadding, rightPadding },
             ],
           };
         }
