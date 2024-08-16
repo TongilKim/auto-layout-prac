@@ -6,6 +6,8 @@ export type ChildElement = {
   width: number;
   leftPadding: number;
   rightPadding: number;
+  topPadding: number;
+  bottomPadding: number;
 };
 
 type State = {
@@ -13,6 +15,7 @@ type State = {
     width: number;
     height: number;
     widthPadding: number;
+    heightPadding: number;
   };
 
   childElements: Array<ChildElement> | [];
@@ -25,7 +28,9 @@ type Action = {
     id: number,
     width: number,
     leftPadding: number,
-    rightPadding: number
+    rightPadding: number,
+    topPadding: number,
+    bottomPadding: number
   ) => void;
 };
 
@@ -34,6 +39,7 @@ export const useDefaultStore = create<State & Action>((set, get) => ({
     width: DEFAULT_PARENT_WIDTH,
     height: DEFAULT_PARENT_HEIGHT,
     widthPadding: 0,
+    heightPadding: 0,
   },
   setParentElementDimension: (width, height) =>
     set(() => ({ parentElement: { ...get().parentElement, width, height } })),
@@ -41,11 +47,20 @@ export const useDefaultStore = create<State & Action>((set, get) => ({
     set(() => ({ parentElement: { ...get().parentElement, widthPadding } })),
 
   childElements: [],
-  setChildElements: (id, width, leftPadding, rightPadding) => {
+  setChildElements: (
+    id,
+    width,
+    leftPadding,
+    rightPadding,
+    topPadding,
+    bottomPadding
+  ) => {
     const childElements = get().childElements;
     if (childElements.length === 0) {
       set(() => ({
-        childElements: [{ id, width, leftPadding, rightPadding }],
+        childElements: [
+          { id, width, leftPadding, rightPadding, topPadding, bottomPadding },
+        ],
       }));
     } else {
       set((state) => {
@@ -53,7 +68,14 @@ export const useDefaultStore = create<State & Action>((set, get) => ({
           return {
             childElements: state.childElements.map((child) => {
               if (child.id === id) {
-                return { id, width, leftPadding, rightPadding };
+                return {
+                  id,
+                  width,
+                  leftPadding,
+                  rightPadding,
+                  topPadding,
+                  bottomPadding,
+                };
               }
               return child;
             }),
@@ -62,7 +84,14 @@ export const useDefaultStore = create<State & Action>((set, get) => ({
           return {
             childElements: [
               ...state.childElements,
-              { id, width, leftPadding, rightPadding },
+              {
+                id,
+                width,
+                leftPadding,
+                rightPadding,
+                topPadding,
+                bottomPadding,
+              },
             ],
           };
         }

@@ -73,16 +73,20 @@ function App() {
     let closetLeftElement: ChildElement = null;
     let closetRightElement: ChildElement = null;
 
+    // for the height
+    const minBottomPadding = DEFAULT_PARENT_HEIGHT;
+    const minTopPadding = DEFAULT_PARENT_HEIGHT;
+    const closetTopElement: ChildElement = null;
+    const closetBottomElement: ChildElement = null;
+
     childElements.forEach((item) => {
       if (item.leftPadding < minLeftPadding) {
         minLeftPadding = item.leftPadding;
         closetLeftElement = item;
-        // setLeftClosestElementId(item.id);
       }
       if (item.rightPadding < minRightPadding) {
         minRightPadding = item.rightPadding;
         closetRightElement = item;
-        // setRightClosestElementId(item.id);
       }
     });
 

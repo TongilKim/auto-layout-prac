@@ -34,12 +34,19 @@ const ResizableRectangle: React.FC<ResizableRectangleProps> = ({
   };
 
   const _setMarginInfo = () => {
-    const rightMargin =
+    const rightPadding =
       parentElement.width - (position.left + dimensions.width);
     // Left margin = Rectangle left position
-    const leftMargin = position.left;
+    const leftPadding = position.left;
 
-    setChildElements(uId, dimensions.width, leftMargin, rightMargin);
+    setChildElements(
+      uId,
+      dimensions.width,
+      leftPadding,
+      rightPadding,
+      position.top,
+      parentElement.height - (position.top + dimensions.height)
+    );
     // // Right margin = Parent width - (Rectangle left position + Rectangle width)
   };
 
