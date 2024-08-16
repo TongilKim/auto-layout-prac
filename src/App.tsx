@@ -5,7 +5,7 @@ import { ChildElement, useDefaultStore } from "./store/useDefaultStore";
 import { DEFAULT_PARENT_HEIGHT, DEFAULT_PARENT_WIDTH } from "./constants";
 
 // This function will generate a random position for the rectangle.
-const _getRandomPosition = (
+const getRandomPosition = (
   existingPositions: { top: number; left: number }[]
 ) => {
   let position = {
@@ -25,13 +25,13 @@ const _getRandomPosition = (
   return position;
 };
 
-// This function will return the minimum padding from the left and right side.
-const _getMinimumPadding = (leftPadding: number, rightPadding: number) => {
-  return Math.min(leftPadding, rightPadding);
+// This function will return the minimum padding between two padding values
+const getMinimumPadding = (paddingOne: number, paddingTwo: number) => {
+  return Math.min(paddingOne, paddingTwo);
 };
 
 // This function will return the minimum width for the parent element.
-const _getMinimumWidthForParentElement = (
+const getMinimumWidthForParentElement = (
   leftPaddingOfClosetRightElement: number,
   widthOfClosetRightElement: number,
   leftPaddingOfClosestLeftElement: number
@@ -41,6 +41,14 @@ const _getMinimumWidthForParentElement = (
     widthOfClosetRightElement -
     leftPaddingOfClosestLeftElement
   );
+};
+
+const getMinimumHeightForParentElement = (
+  parentHeight: number,
+  closestTopPaddingVal: number,
+  closestBottomPaddingVal: number
+) => {
+  return parentHeight - (closestTopPaddingVal + closestBottomPaddingVal);
 };
 
 function App() {
@@ -55,31 +63,34 @@ function App() {
   const setParentElementWidthPadding = useDefaultStore(
     (state) => state.setParentElementWidthPadding
   );
+  const setParentElementHeightPadding = useDefaultStore(
+    (state) => state.setParentElementHeightPadding
+  );
 
   const [positions] = useState(() => {
-    const pos1 = _getRandomPosition([]);
+    const pos1 = getRandomPosition([]);
     // pos1 is passed to the second rectangle to avoid overlapping.
-    const pos2 = _getRandomPosition([pos1]);
+    const pos2 = getRandomPosition([pos1]);
     // pos1 and pos2 are passed to the third rectangle to avoid overlapping.
-    const pos3 = _getRandomPosition([pos1, pos2]);
+    const pos3 = getRandomPosition([pos1, pos2]);
     return [pos1, pos2, pos3];
   });
 
   // This function will returns the closest element from the left and right side.
   const findClosestElements = () => {
-    // for the width
+    // for the WIDTH
     let minRightPadding = DEFAULT_PARENT_WIDTH;
     let minLeftPadding = DEFAULT_PARENT_HEIGHT;
     let closetLeftElement: ChildElement = null;
     let closetRightElement: ChildElement = null;
 
-    // for the height
-    const minBottomPadding = DEFAULT_PARENT_HEIGHT;
-    const minTopPadding = DEFAULT_PARENT_HEIGHT;
-    const closetTopElement: ChildElement = null;
-    const closetBottomElement: ChildElement = null;
+    // for the HEIGHT
+    let minBottomPadding = DEFAULT_PARENT_HEIGHT;
+    let minTopPadding = DEFAULT_PARENT_HEIGHT;
+    let closetTopElement: ChildElement = null;
+    let closetBottomElement: ChildElement = null;
 
-    childElements.forEach((item) => {
+    const _compareWidthPaddingValues = (item: ChildElement) => {
       if (item.leftPadding < minLeftPadding) {
         minLeftPadding = item.leftPadding;
         closetLeftElement = item;
@@ -88,36 +99,80 @@ function App() {
         minRightPadding = item.rightPadding;
         closetRightElement = item;
       }
+    };
+
+    const _compareHeightPaddingValues = (item: ChildElement) => {
+      if (item.topPadding < minTopPadding) {
+        minTopPadding = item.topPadding;
+        closetTopElement = item;
+      }
+      if (item.bottomPadding < minBottomPadding) {
+        minBottomPadding = item.bottomPadding;
+        closetBottomElement = item;
+      }
+    };
+
+    childElements.forEach((item) => {
+      _compareWidthPaddingValues(item);
+      _compareHeightPaddingValues(item);
     });
 
-    return { closetLeftElement, closetRightElement };
+    return {
+      closetLeftElement,
+      closetRightElement,
+      closetTopElement,
+      closetBottomElement,
+    };
   };
 
   const onClickExecuteAutoLayout = () => {
     console.log({ childElements });
 
     const closetElements = findClosestElements();
-    if (closetElements.closetLeftElement && closetElements.closetRightElement) {
-      const { closetLeftElement, closetRightElement } = closetElements;
+    if (
+      closetElements.closetLeftElement &&
+      closetElements.closetRightElement &&
+      closetElements.closetTopElement &&
+      closetElements.closetBottomElement
+    ) {
+      const {
+        closetLeftElement,
+        closetRightElement,
+        closetBottomElement,
+        closetTopElement,
+      } = closetElements;
 
-      const paddingForWidth = _getMinimumPadding(
+      const paddingForWidth = getMinimumPadding(
         closetLeftElement.leftPadding,
         closetRightElement.rightPadding
       );
-      const minimumWidth = _getMinimumWidthForParentElement(
+
+      const paddingForHeight = getMinimumPadding(
+        closetTopElement.topPadding,
+        closetBottomElement.bottomPadding
+      );
+
+      const minimumWidth = getMinimumWidthForParentElement(
         closetRightElement.leftPadding,
         closetRightElement.width,
         closetLeftElement.leftPadding
       );
 
-      // const finalWidth = minimumWidth + paddingForWidth * 2;
+      const minimumHeight = getMinimumHeightForParentElement(
+        parentElement.height,
+        closetTopElement.topPadding,
+        closetBottomElement.bottomPadding
+      );
 
-      console.log({ paddingForWidth });
       console.log({ closetElements });
+      console.log({ paddingForWidth });
+      console.log({ paddingForHeight });
+      console.log({ minimumWidth }, { minimumHeight });
 
-      setParentElementDimension(minimumWidth, DEFAULT_PARENT_HEIGHT);
+      setParentElementDimension(minimumWidth, minimumHeight);
       setTimeout(() => {
         setParentElementWidthPadding(paddingForWidth);
+        setParentElementHeightPadding(paddingForHeight);
       }, 3000);
     }
   };
@@ -128,8 +183,7 @@ function App() {
         style={{
           width: parentElement.width,
           height: parentElement.height,
-          paddingLeft: parentElement.widthPadding,
-          paddingRight: parentElement.widthPadding,
+          padding: `${parentElement.heightPadding}px ${parentElement.widthPadding}px`,
           background: "white",
         }}
       >

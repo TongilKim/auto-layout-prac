@@ -24,6 +24,7 @@ type State = {
 type Action = {
   setParentElementDimension: (width: number, height: number) => void;
   setParentElementWidthPadding: (widthPadding: number) => void;
+  setParentElementHeightPadding: (heightPadding: number) => void;
   setChildElements: (
     id: number,
     width: number,
@@ -45,6 +46,8 @@ export const useDefaultStore = create<State & Action>((set, get) => ({
     set(() => ({ parentElement: { ...get().parentElement, width, height } })),
   setParentElementWidthPadding: (widthPadding) =>
     set(() => ({ parentElement: { ...get().parentElement, widthPadding } })),
+  setParentElementHeightPadding: (heightPadding) =>
+    set(() => ({ parentElement: { ...get().parentElement, heightPadding } })),
 
   childElements: [],
   setChildElements: (
